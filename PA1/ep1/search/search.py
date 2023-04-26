@@ -1,10 +1,16 @@
+# NOME: Lucas Quaresma Medina Lam
+# N. USP: 11796399
+
+# NOME: Roberto Oliveira Bolgheroni
+# N. USP: 11796430
+
 # search.py
 # ---------
 # Licensing Information:  You are free to use or extend these projects for
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -18,6 +24,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+
 
 class SearchProblem:
     """
@@ -70,7 +77,8 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem: SearchProblem):
     """
@@ -86,18 +94,77 @@ def depthFirstSearch(problem: SearchProblem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    stack = util.Stack()
+    markedStates = list()
+    # Stack with ["state", "actions"]
+    stack.push([problem.getStartState(), []])
+
+    while not stack.isEmpty():
+        state, actions = stack.pop()
+
+        if problem.isGoalState(state):
+            return actions
+
+        markedStates.append(state)
+        sucessors = problem.getSuccessors(state)
+        for successorState, actionToTake, _ in sucessors:
+
+            if successorState not in markedStates:
+                stack.push([successorState, actions + [actionToTake]])
+    return []
+
 
 def breadthFirstSearch(problem: SearchProblem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Search the shallowest nodes in the search tree first.
+
+    queue = util.Queue()
+    markedStates = list()
+
+    # Queue with ["state", "actions"]
+    queue.push([problem.getStartState(), []])
+
+    while not queue.isEmpty():
+        state, actions = queue.pop()
+
+        if state not in markedStates:
+            if problem.isGoalState(state):
+                return actions
+
+            markedStates.append(state)
+            sucessors = problem.getSuccessors(state)
+            for successorState, actionToTake, _ in sucessors:
+
+                if successorState not in markedStates:
+                    queue.push([successorState, actions + [actionToTake]])
+    return []
+
 
 def uniformCostSearch(problem: SearchProblem):
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Search the node of least total cost first.
+
+    pQueue = util.PriorityQueue()
+    markedStates = list()
+
+    # Priority Queue with ["state", "actions"]
+    pQueue.push([problem.getStartState(), []], 0)
+
+    while not pQueue.isEmpty():
+        state, actions = pQueue.pop()
+
+        if state not in markedStates:
+            if problem.isGoalState(state):
+                return actions
+
+            markedStates.append(state)
+            sucessors = problem.getSuccessors(state)
+            for successorState, actionToTake, _ in sucessors:
+                nodeActions = actions + [actionToTake]
+                nodeCost = problem.getCostOfActions(nodeActions)
+                node = [successorState, nodeActions]
+                pQueue.update(node, nodeCost)
+    return []
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -106,13 +173,14 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
+    # Search the node that has the lowest combined cost and heuristic first.
     util.raiseNotDefined()
 
 
 # Abbreviations
+# *** DO NOT CHANGE THESE ***
 bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
