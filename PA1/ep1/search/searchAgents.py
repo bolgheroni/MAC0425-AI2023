@@ -382,7 +382,7 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
 
     remainingCorners = []
     for corner in corners:
-        if corner not in remainingCorners:
+        if corner not in state[1]:
             remainingCorners.append(corner)
 
     answer = 0
