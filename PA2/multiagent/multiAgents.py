@@ -73,9 +73,26 @@ class ReflexAgent(Agent):
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-
-        "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        newCapsules = successorGameState.getCapsules()
+        
+        isStuck = (currentGameState.getPacmanPosition() == newPos)
+        stuckPenalty = -20 if isStuck else 0
+        
+        foodsDistsSum = max (sum([manhattanDistance(newPos, food) for food in newFood.asList()]), 1)
+        minFoodDist = max(min([manhattanDistance(newPos, food) for food in currentGameState.getFood().asList()]), 1)
+        
+        foodDistScore = (50/foodsDistsSum) + (200/minFoodDist)
+        
+        minGhostDist = min([manhattanDistance(newPos, ghost.getPosition()) for ghost in newGhostStates])
+        ghostDistanceScore = 0
+        if (minGhostDist < 2):
+            ghostDistanceScore = -600
+        elif (minGhostDist < 4):
+            ghostDistanceScore = -200
+            
+        minCapsulesDist = 1 if len(newCapsules) == 0 else min([manhattanDistance(newPos, capsule) for capsule in newCapsules])
+       
+        return successorGameState.getScore() + ghostDistanceScore + stuckPenalty + foodDistScore + (60/minCapsulesDist)
 
 def scoreEvaluationFunction(currentGameState: GameState):
     """
