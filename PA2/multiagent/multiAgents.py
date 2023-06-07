@@ -90,8 +90,8 @@ class ReflexAgent(Agent):
         elif (minGhostDist < 4):
             ghostDistanceScore = -200
             
-        if (newScaredTimes[0] > 4):
-                ghostDistanceScore = 500/max(1, minGhostDist)    
+        # if (newScaredTimes[0] > 4):
+        #         ghostDistanceScore = 500/max(1, minGhostDist)    
             
         minCapsulesDist = 1 if len(newCapsules) == 0 else min([manhattanDistance(newPos, capsule) for capsule in newCapsules])
         capsulesScore = (60/minCapsulesDist)
