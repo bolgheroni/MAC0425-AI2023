@@ -83,15 +83,18 @@ class ReflexAgent(Agent):
         
         foodDistScore = (50/foodsDistsSum) + (200/minFoodDist)
         
-        minGhostDist = min([manhattanDistance(newPos, ghost.getPosition()) for ghost in newGhostStates])
+        ghostScoreMap = [[manhattanDistance(newPos, ghost.getPosition()), ghost.scaredTimer > 3] for ghost in newGhostStates]
         ghostDistanceScore = 0
-        if (minGhostDist < 2):
-            ghostDistanceScore = -600
-        elif (minGhostDist < 4):
-            ghostDistanceScore = -200
-            
-        # if (newScaredTimes[0] > 4):
-        #         ghostDistanceScore = 500/max(1, minGhostDist)    
+  
+        for [dist, shouldHunt] in ghostScoreMap:
+            if (not shouldHunt):
+                if dist < 2:
+                    ghostDistanceScore = -600
+                    break 
+                if dist < 4:
+                    ghostDistanceScore = -200
+            else:
+                ghostDistanceScore += 300/max(1, dist) 
             
         minCapsulesDist = 1 if len(newCapsules) == 0 else min([manhattanDistance(newPos, capsule) for capsule in newCapsules])
         capsulesScore = (60/minCapsulesDist)
