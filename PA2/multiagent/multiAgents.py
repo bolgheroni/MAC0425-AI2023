@@ -90,9 +90,19 @@ class ReflexAgent(Agent):
         elif (minGhostDist < 4):
             ghostDistanceScore = -200
             
+        if (newScaredTimes[0] > 4):
+                ghostDistanceScore = 500/max(1, minGhostDist)    
+            
         minCapsulesDist = 1 if len(newCapsules) == 0 else min([manhattanDistance(newPos, capsule) for capsule in newCapsules])
-       
-        return successorGameState.getScore() + ghostDistanceScore + stuckPenalty + foodDistScore + (60/minCapsulesDist)
+        capsulesScore = (60/minCapsulesDist)
+        
+        movesAvailable = len(successorGameState.getLegalActions())
+        movesScore = 0
+        if (movesAvailable <= 2 and len(newFood.asList()) == len(currentGameState.getFood().asList())):
+            movesScore = -1000
+                
+        return successorGameState.getScore() + ghostDistanceScore + stuckPenalty + foodDistScore + capsulesScore + movesScore
+        
 
 def scoreEvaluationFunction(currentGameState: GameState):
     """
