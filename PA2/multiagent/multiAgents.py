@@ -211,23 +211,110 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        maxAction = None
+        maxV = float("-inf")
+        v = float("-inf")
+        alpha = float("-inf")
+        beta =  float("inf")
+
+        for action in gameState.getLegalActions(0):
+            v = self.minValue(gameState.generateSuccessor(0, action), 0, 1, alpha, beta)
+
+            if(v > maxV):
+                maxV = v
+                maxAction = action
+            if (v > beta) :
+                return v
+            alpha = max(alpha, v)
+
+        return maxAction
+
+    def maxValue(self, gameState, depth, alpha, beta) :
+        # estado terminal 
+        if (depth == self.depth or gameState.isWin() or gameState.isLose()) :
+            return self.evaluationFunction(gameState)
+
+        v = float("-inf")
+
+        for action in gameState.getLegalActions(0) :
+            v = max(v, self.minValue(gameState.generateSuccessor(0, action), depth, 1, alpha, beta))
+
+            if v > beta:
+                return v
+            alpha = max(alpha, v)
+            
+        return v
+    
+    def minValue(self, gameState, depth, ghostIndex, alpha, beta) :
+        numGhosts = gameState.getNumAgents() - 1
+
+        if (depth == self.depth or gameState.isWin() or gameState.isLose()) :
+            return self.evaluationFunction(gameState)
+
+        v = float("inf")
+        for action in gameState.getLegalActions(ghostIndex) :
+            sucessorState = gameState.generateSuccessor(ghostIndex, action)
+            if(ghostIndex < numGhosts):
+                v = min(v, self.minValue(sucessorState, depth, ghostIndex+1, alpha, beta))
+            else:
+                v = min(v, self.maxValue(sucessorState, depth+1, alpha, beta))
+
+            if v < alpha :
+                return v
+            beta = min(beta, v)
+            
+        return v
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
     """
 
-    def getAction(self, gameState: GameState):
+    def getAction(self, gameState):
         """
-        Returns the expectimax action using self.depth and self.evaluationFunction
+          Returns the expectimax action using self.depth and self.evaluationFunction
 
-        All ghosts should be modeled as choosing uniformly at random from their
-        legal moves.
+          All ghosts should be modeled as choosing uniformly at random from their
+          legal moves.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        maxAction = None
+        maxV = float("-inf")
+
+        for action in gameState.getLegalActions(0):
+            v = self.minValue(gameState.generateSuccessor(0, action), 0, 1)
+            if(v > maxV):
+                maxV = v
+                maxAction = action
+        return maxAction
+
+    def maxValue(self, gameState, depth) :
+        # estado terminal 
+        if (depth == self.depth or gameState.isWin() or gameState.isLose()) :
+            return self.evaluationFunction(gameState)
+
+        v = float("-inf")
+
+        for action in gameState.getLegalActions(0) :
+            v = max(v, self.minValue(gameState.generateSuccessor(0, action), depth, 1))
+        return v
+
+    def minValue(self, gameState, depth, ghostIndex) :
+        numGhosts = gameState.getNumAgents() - 1
+
+        if (depth == self.depth or gameState.isWin() or gameState.isLose()) :
+            return self.evaluationFunction(gameState)
+
+        v = 0
+
+        for action in gameState.getLegalActions(ghostIndex) :
+            sucessorState = gameState.generateSuccessor(ghostIndex, action)
+            if(ghostIndex < numGhosts):
+                v += self.minValue(sucessorState, depth, ghostIndex+1)
+
+            else:
+                v += self.maxValue(sucessorState, depth+1)
+
+        return v / float(len(gameState.getLegalActions(ghostIndex)))
 
 def betterEvaluationFunction(currentGameState: GameState):
     """
